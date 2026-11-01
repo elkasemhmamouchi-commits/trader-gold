@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>تاجر الذهب</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0a0806">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="تاجر الذهب">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Tajawal:wght@400;700;900&display=swap');
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+body {
+  font-family: 'Tajawal', sans-serif;
+  background: radial-gradient(ellipse at top, #1a1208 0%, #0a0806 70%);
+  color: #f5e6c8;
+  min-height: 100dvh;
+  display: flex;
+  justify-content: center;
+  padding: max(10px, env(safe-area-inset-top)) 10px max(10px, env(safe-area-inset-bottom));
+  overflow-x: hidden;
+}
+.game { width: 100%; max-width: 420px; display: flex; flex-direction: column; }
+.screen { display: flex; flex-direction: column; flex: 1; animation: fadeIn .35s ease; }
+.screen.hidden { display: none !important; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+#startScreen { justify-content: flex-start; align-items: center; text-align: center; padding: 10px 5px; overflow-y: auto; }
+.crest { font-size: 60px; animation: glow 2s ease-in-out infinite; }
+@keyframes glow {
+  0%,100% { filter: drop-shadow(0 0 20px #d4a017); transform: scale(1); }
+  50% { filter: drop-shadow(0 0 40px #fbbf24); transform: scale(1.06); }
+}
+#startScreen h1 {
+  font-family: 'Cinzel', serif; font-size: 26px; color: #fbbf24;
+  text-shadow: 0 0 30px rgba(251,191,36,.5); margin: 6px 0 12px; letter-spacing: 3px;
+}
+.tabs {
+  display: flex; gap: 4px; width: 100%; background: rgba(15,12,8,.95);
+  border: 1px solid rgba(212,160,23,.25); border-radius: 12px;
+  padding: 4px; margin-bottom: 12px;
+}
+.tab {
+  flex: 1; background: transparent; border: none; color: #a89070;
+  font-family: inherit; font-weight: 700; font-size: 12px;
+  padding: 8px 4px; border-radius: 8px; cursor: pointer; transition: all .2s;
+}
+.tab.active { background: linear-gradient(135deg, #d4a017, #b8860b); color: #0a0806; }
+.tab-content { width: 100%; animation: fadeIn .25s ease; }
+.tab-content.hidden { display: none !important; }
+.daily-reward {
+  background: linear-gradient(135deg, rgba(74,222,128,.18), rgba(34,197,94,.22));
+  border: 1px solid rgba(74,222,128,.5);
+  border-radius: 12px; padding: 10px 16px;
+  margin-bottom: 10px; font-size: 13px; color: #4ade80;
+  animation: pulseGreen 2s infinite;
+}
+.daily-reward b { color: #86efac; }
+.daily-reward.hidden { display: none !important; }
+@keyframes pulseGreen {
+  0%,100% { box-shadow: 0 0 0 0 rgba(74,222,128,.4); }
+  50% { box-shadow: 0 0 0 8px rgba(74,222,128,0); }
+}
+.difficulty-select { display: flex; flex-direction: column; gap: 7px; }
+.diff-btn {
+  background: rgba(26,20,16,.95); border: 1px solid rgba(212,160,23,.3);
+  border-radius: 14px; padding: 10px 14px;
+  display: flex; flex-direction: column; gap: 2px;
+  cursor: pointer; font-family: inherit; color: #f5e6c8;
+  text-align: right; transition: all .2s;
+}
+.diff-btn:active { transform: scale(.97); border-color: #fbbf24; box-shadow: 0 0 20px rgba(251,191,36,.3); }
+.diff-name { font-weight: 900; font-size: 15px; color: #fbbf24; }
+.diff-detail { font-size: 10px; color: #a89070; }
+.diff-best { font-size: 10px; color: #4ade80; }
+.diff-best b { color: #86efac; font-family: 'Cinzel', serif; }
+.settings-row {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-top: 12px; padding: 8px 12px;
+  background: rgba(26,20,16,.6); border-radius: 10px;
+}
+.toggle-label { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #a89070; cursor: pointer; }
+.toggle-label input { accent-color: #d4a017; width: 16px; height: 16px; }
+.btn-danger-small {
+  background: transparent; border: 1px solid rgba(239,68,68,.5);
+  color: #ef4444; font-family: inherit; font-size: 11px;
+  padding: 5px 10px; border-radius: 8px; cursor: pointer;
+}
+.ach-summary { text-align: center; font-size: 12px; color: #a89070; margin-bottom: 10px; padding: 6px; }
+.ach-summary b { color: #fbbf24; font-family: 'Cinzel', serif; font-size: 15px; }
+.ach-list { display: flex; flex-direction: column; gap: 6px; max-height: 55dvh; overflow-y: auto; padding: 2px; }
+.ach-item {
+  display: flex; align-items: center; gap: 10px;
+  background: rgba(26,20,16,.85); border: 1px solid rgba(212,160,23,.2);
+  border-radius: 10px; padding: 8px 12px; transition: all .2s;
+}
+.ach-item.unlocked { border-color: rgba(74,222,128,.4); background: linear-gradient(135deg, rgba(26,20,16,.95), rgba(34,197,94,.08)); }
+.ach-item.locked { opacity: .55; }
+.ach-icon { font-size: 22px; width: 32px; text-align: center; }
+.ach-info { flex: 1; text-align: right; }
+.ach-title { font-weight: 700; font-size: 13px; color: #fbbf24; }
+.ach-desc { font-size: 10px; color: #a89070; }
+.ach-check { font-size: 16px; }
+.ach-item.unlocked .ach-check { color: #4ade80; }
+.ach-item.locked .ach-check { color: #6b5a40; }
+.stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 2px; }
+.stat-card { background: rgba(26,20,16,.9); border: 1px solid rgba(212,160,23,.25); border-radius: 12px; padding: 12px 8px; text-align: center; }
+.stat-card .stat-icon { font-size: 22px; display: block; margin-bottom: 4px; }
+.stat-card .stat-num { font-family: 'Cinzel', serif; font-weight: 900; font-size: 20px; color: #fbbf24; display: block; }
+.stat-card .stat-lbl { font-size: 10px; color: #a89070; }
+.top-bar { display: grid; grid-template-columns: auto 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+.icon-btn { background: rgba(26,20,16,.9); border: 1px solid rgba(212,160,23,.3); border-radius: 10px; padding: 8px 10px; font-size: 18px; cursor: pointer; color: #f5e6c8; }
+.stat { background: rgba(26,20,16,.9); border: 1px solid rgba(212,160,23,.3); border-radius: 10px; padding: 6px 8px; text-align: center; }
+.stat-label { font-size: 10px; color: #a89070; display: block; }
+.stat-value { font-family: 'Cinzel', serif; font-weight: 900; font-size: 18px; color: #fbbf24; text-shadow: 0 0 10px rgba(251,191,36,.3); }
+#money { color: #4ade80; text-shadow: 0 0 10px rgba(74,222,128,.4); }
+.time-wrap { margin-bottom: 8px; }
+.time-header { display: flex; justify-content: space-between; font-size: 12px; color: #a89070; margin-bottom: 4px; padding: 0 4px; }
+#timeVal { font-family: 'Cinzel', serif; font-weight: 900; font-size: 14px; color: #fbbf24; }
+.time-bar { height: 10px; background: rgba(26,20,16,.9); border-radius: 5px; overflow: hidden; border: 1px solid rgba(212,160,23,.25); }
+.time-fill { height: 100%; width: 100%; border-radius: 5px; background: linear-gradient(90deg, #b8860b, #fbbf24); transition: width .35s ease, background .35s; }
+.time-fill.warn { background: linear-gradient(90deg, #dc2626, #ef4444); animation: pulse .7s infinite; }
+.time-fill.gain { background: linear-gradient(90deg, #22c55e, #4ade80); }
+@keyframes pulse { 50% { opacity: .5; } }
+.event-banner {
+  display: flex; align-items: center; gap: 8px;
+  background: linear-gradient(135deg, rgba(251,191,36,.25), rgba(212,160,23,.35));
+  border: 1px solid #fbbf24; border-radius: 10px;
+  padding: 8px 12px; margin-bottom: 8px;
+  animation: eventIn .4s ease, eventPulse 1s ease-in-out infinite;
+}
+.event-banner.hidden { display: none !important; }
+@keyframes eventIn { 0% { transform: translateY(-20px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
+@keyframes eventPulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(251,191,36,.4); }
+  50% { box-shadow: 0 0 0 8px rgba(251,191,36,0); }
+}
+.event-icon { font-size: 20px; }
+.event-title { font-weight: 900; font-size: 13px; color: #fbbf24; flex: 1; text-align: right; }
+.event-desc { font-size: 10px; color: #d4c4a0; }
+.combo-banner {
+  position: fixed; top: 100px; left: 50%; transform: translateX(-50%);
+  background: linear-gradient(135deg, #d4a017, #fbbf24);
+  color: #0a0806; padding: 6px 18px; border-radius: 20px;
+  font-weight: 900; font-size: 14px; z-index: 100;
+  box-shadow: 0 0 25px rgba(251,191,36,.7);
+}
+.combo-banner.hidden { display: none !important; }
+.combo-banner.pop { animation: comboPop .5s ease; }
+@keyframes comboPop {
+  0% { transform: translateX(-50%) scale(.4); }
+  60% { transform: translateX(-50%) scale(1.2); }
+  100% { transform: translateX(-50%) scale(1); }
+}
+.goods { display: flex; flex-direction: column; gap: 6px; flex: 1; }
+.good {
+  background: linear-gradient(145deg, rgba(26,20,16,.98), rgba(15,12,8,.98));
+  border: 1px solid rgba(212,160,23,.25); border-radius: 12px; padding: 6px 10px;
+}
+.good-top { display: flex; justify-content: space-between; align-items: center; }
+.good-name { font-weight: 700; font-size: 12px; }
+.good-name small { color: #a89070; font-size: 9px; margin-right: 4px; }
+.good-price { font-family: 'Cinzel', serif; font-weight: 900; font-size: 15px; color: #fbbf24; transition: color .2s; }
+.good-price.up { color: #4ade80; }
+.good-price.down { color: #ef4444; }
+.good-price.bump { animation: priceBump .3s; }
+@keyframes priceBump { 0% { transform: scale(1.25); } 100% { transform: scale(1); } }
+.chart-wrap { height: 24px; margin: 2px 0; }
+.chart { width: 100%; height: 100%; display: block; }
+.good-actions { display: flex; gap: 5px; }
+.good-actions button {
+  flex: 1; padding: 5px; border: none; border-radius: 6px;
+  font-family: inherit; font-weight: 700; font-size: 11px; cursor: pointer;
+}
+.btn-buy { background: linear-gradient(135deg, #d4a017, #b8860b); color: #0a0806; }
+.btn-sell { background: linear-gradient(135deg, #8b5a2b, #5a3a1a); color: #f5e6c8; }
+.btn-sell-all { background: linear-gradient(135deg, #22c55e, #16a34a); color: #0a0806; flex: 0 0 auto; padding: 5px 8px; }
+.btn-buy:disabled, .btn-sell:disabled, .btn-sell-all:disabled { opacity: .3; cursor: not-allowed; }
+.btn-buy.pulse { animation: btnPulse 1.2s infinite; }
+.btn-sell.pulse-profit { animation: btnPulseGreen 1s infinite; }
+@keyframes btnPulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(212,160,23,.7); }
+  50% { box-shadow: 0 0 0 6px rgba(212,160,23,0); }
+}
+@keyframes btnPulseGreen {
+  0%,100% { box-shadow: 0 0 0 0 rgba(74,222,128,.8); }
+  50% { box-shadow: 0 0 0 6px rgba(74,222,128,0); }
+}
+.good-owned { font-size: 9px; color: #a89070; margin-top: 2px; text-align: center; min-height: 11px; }
+.good-owned.profit { color: #4ade80; font-weight: 700; }
+.good-owned.loss { color: #ef4444; }
+.btn-ad {
+  width: 100%; padding: 7px; margin-top: 8px;
+  background: linear-gradient(135deg, #5a3a1a, #8b5a2b);
+  border: 1px solid #d4a017; border-radius: 10px;
+  color: #f5e6c8; font-family: inherit; font-weight: 700; font-size: 12px; cursor: pointer;
+}
+.btn-ad small { font-size: 10px; opacity: .8; }
+.btn-ad:disabled { opacity: .5; }
+.news-ticker {
+  display: flex; align-items: center; gap: 6px;
+  background: rgba(15,12,8,.9); border: 1px solid rgba(212,160,23,.2);
+  border-radius: 8px; padding: 5px 10px; margin-top: 8px;
+  font-size: 11px; color: #a89070; overflow: hidden; white-space: nowrap;
+}
+.news-label { flex-shrink: 0; }
+.news-text { flex: 1; overflow: hidden; text-overflow: ellipsis; animation: tickerFade 1s ease; }
+@keyframes tickerFade { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: none; } }
+#endScreen { justify-content: center; align-items: center; text-align: center; padding: 15px; overflow-y: auto; }
+.end-icon { font-size: 72px; animation: glow 2s infinite; }
+#endScreen h2 { font-family: 'Cinzel', serif; font-size: 24px; color: #fbbf24; margin: 6px 0; letter-spacing: 2px; }
+.end-stats { background: rgba(26,20,16,.9); border: 1px solid rgba(212,160,23,.3); border-radius: 14px; padding: 14px 24px; margin: 12px 0; font-size: 13px; line-height: 1.9; width: 100%; max-width: 300px; }
+.end-stats b { color: #fbbf24; font-family: 'Cinzel', serif; font-size: 15px; }
+.new-record { background: linear-gradient(135deg, rgba(251,191,36,.2), rgba(251,191,36,.35)); border: 1px solid #fbbf24; color: #fbbf24; padding: 6px 18px; border-radius: 20px; font-weight: 900; font-size: 13px; margin: 6px 0; animation: pulseGold 1.5s infinite; }
+.new-record.hidden { display: none !important; }
+@keyframes pulseGold {
+  0%,100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(251,191,36,.6); }
+  50% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(251,191,36,0); }
+}
+.end-achievements { background: linear-gradient(135deg, rgba(26,20,16,.9), rgba(34,197,94,.08)); border: 1px solid rgba(74,222,128,.35); border-radius: 14px; padding: 10px 14px; margin: 8px 0; width: 100%; max-width: 300px; }
+.end-achievements.hidden { display: none !important; }
+.end-ach-title { font-size: 11px; color: #4ade80; font-weight: 700; margin-bottom: 6px; }
+.end-ach-list { display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; }
+.end-ach-item { background: rgba(74,222,128,.15); border: 1px solid rgba(74,222,128,.4); border-radius: 8px; padding: 3px 8px; font-size: 10px; color: #86efac; }
+.end-actions { display: flex; flex-direction: column; gap: 8px; margin-top: 6px; width: 100%; max-width: 280px; }
+.btn-gold { background: linear-gradient(135deg, #fbbf24, #d4a017); border: none; color: #0a0806; padding: 12px 40px; border-radius: 14px; font-family: inherit; font-weight: 900; font-size: 15px; cursor: pointer; box-shadow: 0 0 25px rgba(251,191,36,.4), inset 0 -3px 0 rgba(0,0,0,.2); }
+.btn-gold:active { transform: scale(.96); }
+.btn-secondary { background: transparent; border: 1px solid rgba(212,160,23,.5); color: #f5e6c8; padding: 10px; border-radius: 12px; font-family: inherit; font-weight: 700; font-size: 13px; cursor: pointer; }
+#floatLayer { position: fixed; inset: 0; pointer-events: none; z-index: 200; overflow: hidden; }
+.float-num { position: absolute; font-family: 'Cinzel', serif; font-weight: 900; font-size: 20px; animation: floatUp 1.2s ease-out forwards; text-shadow: 0 2px 10px rgba(0,0,0,.9); transform: translate(-50%, 0); }
+.float-num.positive { color: #4ade80; }
+.float-num.negative { color: #ef4444; }
+.float-num.gold { color: #fbbf24; }
+@keyframes floatUp {
+  0% { transform: translate(-50%, 0) scale(.5); opacity: 0; }
+  20% { transform: translate(-50%, -10px) scale(1.2); opacity: 1; }
+  100% { transform: translate(-50%, -90px) scale(1); opacity: 0; }
+}
+#flashOverlay { position: fixed; inset: 0; pointer-events: none; z-index: 150; opacity: 0; }
+#flashOverlay.flash-green { background: rgba(74,222,128,.2); animation: flash .35s; }
+#flashOverlay.flash-red { background: rgba(239,68,68,.28); animation: flash .35s; }
+#flashOverlay.flash-gold { background: rgba(251,191,36,.25); animation: flash .5s; }
+@keyframes flash { 0% { opacity: 1; } 100% { opacity: 0; } }
+.game.shake { animation: shake .3s; }
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  75% { transform: translateX(6px); }
+}
+#toastLayer { position: fixed; top: 60px; left: 50%; transform: translateX(-50%); z-index: 300; display: flex; flex-direction: column; gap: 6px; pointer-events: none; width: 90%; max-width: 360px; }
+.toast { background: linear-gradient(135deg, #d4a017, #fbbf24); color: #0a0806; padding: 10px 16px; border-radius: 12px; font-weight: 700; font-size: 13px; text-align: center; box-shadow: 0 6px 20px rgba(0,0,0,.5), 0 0 30px rgba(251,191,36,.5); animation: toastIn .4s ease; }
+.toast.green { background: linear-gradient(135deg, #22c55e, #4ade80); box-shadow: 0 6px 20px rgba(0,0,0,.5), 0 0 30px rgba(74,222,128,.5); }
+@keyframes toastIn { from { transform: translateY(-20px) scale(.9); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
+.toast.out { animation: toastOut .3s ease forwards; }
+@keyframes toastOut { to { transform: translateY(-20px) scale(.9); opacity: 0; } }
+</style>
+</head>
+<body>
+<div class="game" id="game">
+  <div class="screen" id="startScreen">
+    <div class="crest">👑</div>
+    <h1>تاجر الذهب</h1>
+    <div class="tabs">
+      <button class="tab active" data-tab="play">🎮 لعب</button>
+      <button class="tab" data-tab="ach">🏆 إنجازات</button>
+      <button class="tab" data-tab="stats">📊 إحصائيات</button>
+    </div>
+    <div class="tab-content" id="tab-play">
+      <div class="daily-reward hidden" id="dailyReward">🎁 مكافأة يومية: <b>+300 💰</b></div>
+      <div class="difficulty-select">
+        <button class="diff-btn" data-diff="easy">
+          <span class="diff-name">🌱 سهل</span>
+          <span class="diff-detail">⏱️ 60s • 🎯 1500</span>
+          <span class="diff-best">🏆 أفضل: <b id="best-easy">0</b></span>
+        </button>
+        <button class="diff-btn" data-diff="medium">
+          <span class="diff-name">⚖️ متوسط</span>
+          <span class="diff-detail">⏱️ 45s • 🎯 2000</span>
+          <span class="diff-best">🏆 أفضل: <b id="best-medium">0</b></span>
+        </button>
+        <button class="diff-btn" data-diff="hard">
+          <span class="diff-name">🔥 خبير</span>
+          <span class="diff-detail">⏱️ 35s • 🎯 3000</span>
+          <span class="diff-best">🏆 أفضل: <b id="best-hard">0</b></span>
+        </button>
+      </div>
+      <div class="settings-row">
+        <label class="toggle-label">
+          <input type="checkbox" id="hapticsToggle" checked>
+          <span>📳 اهتزاز</span>
+        </label>
+        <button class="btn-danger-small" id="resetBtn">🗑️ حذف التقدم</button>
+      </div>
+    </div>
+    <div class="tab-content hidden" id="tab-ach">
+      <div class="ach-summary"><b id="achCount">0</b> / <span id="achTotal">12</span> مفتوح</div>
+      <div class="ach-list" id="achList"></div>
+    </div>
+    <div class="tab-content hidden" id="tab-stats">
+      <div class="stats-grid" id="statsGrid"></div>
+    </div>
+  </div>
+
+  <div class="screen hidden" id="playScreen">
+    <div class="event-banner hidden" id="eventBanner">
+      <span class="event-icon" id="eventIcon">🚀</span>
+      <span class="event-title" id="eventTitle">طفرة ذهبية!</span>
+      <span class="event-desc" id="eventDesc">الذهب +30%</span>
+    </div>
+    <div class="top-bar">
+      <button class="icon-btn" id="muteBtn">🔊</button>
+      <div class="stat">
+        <span class="stat-label">💰 الثروة</span>
+        <span class="stat-value" id="money">1000</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">🎯 الهدف</span>
+        <span class="stat-value" id="goal">2000</span>
+      </div>
+    </div>
+    <div class="time-wrap">
+      <div class="time-header">
+        <span>⏱️ الوقت</span>
+        <span id="timeVal">45.0s</span>
+      </div>
+      <div class="time-bar"><div class="time-fill" id="timeFill"></div></div>
+    </div>
+    <div class="combo-banner hidden" id="comboBanner">🔥 Combo ×<span id="comboVal">2</span></div>
+    <div class="goods" id="goods"></div>
+    <button class="btn-ad" id="adBtn">📺 شاهد إعلان <small>+200 💰 +5s</small></button>
+    <div class="news-ticker">
+      <span class="news-label">📰</span>
+      <span class="news-text" id="newsText">...</span>
+    </div>
+  </div>
+
+  <div class="screen hidden" id="endScreen">
+    <div class="end-icon" id="endIcon">🏆</div>
+    <h2 id="endTitle">فوز</h2>
+    <p id="endMsg" style="color:#a89070;font-size:13px;"></p>
+    <div class="new-record hidden" id="newRecord">🌟 رقم قياسي جديد!</div>
+    <div class="end-stats">
+      <div>💰 الثروة: <b id="endMoney">0</b></div>
+      <div>🔥 أفضل Combo: <b id="endCombo">0</b></div>
+      <div>⏱️ الوقت: <b id="endTime">0</b></div>
+      <div>📈 ربح الجلسة: <b id="endProfit">0</b></div>
+      <div>🏆 أفضل (<span id="endDiffName">متوسط</span>): <b id="endBest">0</b></div>
+    </div>
+    <div class="end-achievements hidden" id="endAchievements">
+      <div class="end-ach-title">🏅 إنجازات مفتوحة:</div>
+      <div class="end-ach-list" id="endAchList"></div>
+    </div>
+    <div class="end-actions">
+      <button class="btn-gold" id="againBtn">العب مجدداً</button>
+      <button class="btn-secondary" id="changeDiffBtn">تغيير الصعوبة</button>
+    </div>
+  </div>
+</div>
+
+<div id="floatLayer"></div>
+<div id="flashOverlay"></div>
+<div id="toastLayer"></div>
+
+<script>
+'use strict';
+var DIFFICULTIES = {
+  easy:   { name: 'سهل',   startGold: 1000, goalGold: 1500, startTime: 60, timeGain: 4, timeLoss: 3, volMult: 0.7 },
+  medium: { name: 'متوسط', startGold: 1000, goalGold: 2000, startTime: 45, timeGain: 3, timeLoss: 4, volMult: 1.0 },
+  hard:   { name: 'خبير', startGold: 1000, goalGold: 3000, startTime: 35, timeGain: 2, timeLoss: 5, volMult: 1.4 }
+};
+var currentDifficulty = 'medium';
+var CFG = {
+  startGold: 1000, goalGold: 2000, startTime: 45, tickMs: 700,
+  timeGain: 3, timeLoss: 4, comboBonus: 1, comboMax: 10, volMult: 1.0,
+  adGold: 200, adTime: 5, adCooldownMs: 25000
+};
+var GOODS_DEF = [
+  { name: 'ذهب',   icon: '🥇', base: 100, vol: 0.03, risk: 'آمن' },
+  { name: 'فضة',   icon: '🥈', base: 60,  vol: 0.06, risk: 'متوسط' },
+  { name: 'نفط',   icon: '🛢️', base: 80,  vol: 0.09, risk: 'مخاطرة' },
+  { name: 'ألماس', icon: '💎', base: 150, vol: 0.13, risk: 'عالي' }
+];
+var MARKET_EVENTS = [
+  { id: 'goldRush', icon: '🚀', title: 'طفرة ذهبية!', desc: 'الذهب +30%', dur: 6000, apply: function () { shift(0, 1.3); } },
+  { id: 'silverDemand', icon: '🥈', title: 'طلب على الفضة!', desc: 'الفضة +35%', dur: 6000, apply: function () { shift(1, 1.35); } },
+  { id: 'oilCrisis', icon: '🛢️', title: 'أزمة نفط!', desc: 'النفط +40%', dur: 6000, apply: function () { shift(2, 1.4); } },
+  { id: 'diamondFind', icon: '💎', title: 'اكتشاف ألماس!', desc: 'الألماس +50%', dur: 6000, apply: function () { shift(3, 1.5); } },
+  { id: 'crash', icon: '📉', title: 'انهيار السوق!', desc: 'كل الأسعار -20%', dur: 6000, apply: function () { GS.goods.forEach(function (g, i) { g.price = Math.round(g.price * 0.8); g.history.push(g.price); updateGoodUI(i); }); } },
+  { id: 'boom', icon: '📈', title: 'صعود شامل!', desc: 'كل الأسعار +15%', dur: 6000, apply: function () { GS.goods.forEach(function (g, i) { g.price = Math.round(g.price * 1.15); g.history.push(g.price); updateGoodUI(i); }); } },
+  { id: 'volatile', icon: '🌪️', title: 'تقلبات شديدة!', desc: 'تقلب × 2', dur: 8000, apply: function () { GS.eventVolBoost = 2; } }
+];
+var ACHIEVEMENTS = [
+  { id: 'firstTrade', icon: '🤝', title: 'أول صفقة', desc: 'أكمل صفقة واحدة' },
+  { id: 'firstProfit', icon: '💵', title: 'أول ربح', desc: 'اربح في صفقة' },
+  { id: 'combo5', icon: '🔥', title: 'سلسلة ×5', desc: 'Combo 5' },
+  { id: 'combo10', icon: '⚡', title: 'سلسلة ×10', desc: 'Combo 10' },
+  { id: 'winEasy', icon: '🌱', title: 'انتصار مبتدئ', desc: 'افز في السهل' },
+  { id: 'winMedium', icon: '⚖️', title: 'تاجر متمرس', desc: 'افز في المتوسط' },
+  { id: 'winHard', icon: '🔥', title: 'محترف', desc: 'افز في الخبير' },
+  { id: 'rich5k', icon: '💰', title: 'ثري', desc: 'اجمع 5000' },
+  { id: 'trader20', icon: '📊', title: 'نشط', desc: '20 صفقة في جلسة' },
+  { id: 'clutch', icon: '🎯', title: 'على الحافة', desc: 'افز بأقل من 5s' },
+  { id: 'ads5', icon: '📺', title: 'داعم', desc: 'شاهد 5 إعلانات' },
+  { id: 'veteran', icon: '🎖️', title: 'مخضرم', desc: 'العب 10 جلسات' }
+];
+var NEWS_ITEMS = [
+  '📰 تاجر محلي يحقق ثروة من صفقة ألماس',
+  '📈 خبراء يتوقعون طفرة في الذهب قريباً',
+  '🛢️ النفط يهتز بعد قرارات جديدة',
+  '💎 اكتشافات جديدة ترفع أسعار الألماس',
+  '🥈 الفضة تتصدر تداولات اليوم',
+  '⚖️ السوق يشهد استقراراً نسبياً',
+  '📉 تحذيرات من تقلبات قادمة في السوق'
+];
+var STORAGE = {
+  get: function (k, d) { try { var v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set: function (k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+};
+var DAILY_REWARD = 300;
+var DAILY_INTERVAL = 24 * 60 * 60 * 1000;
+function getBest(d) { return STORAGE.get('traderBest_' + d, 0); }
+function saveBest(d, s) { var c = getBest(d); if (s > c) { STORAGE.set('traderBest_' + d, s); return true; } return false; }
+function dailyReady() { return (Date.now() - STORAGE.get('traderLastReward', 0)) >= DAILY_INTERVAL; }
+function claimDaily() { STORAGE.set('traderLastReward', Date.now()); return DAILY_REWARD; }
+function getStats() { return STORAGE.get('traderStats', { totalRuns: 0, totalWins: 0, totalTrades: 0, totalProfit: 0, lifetimeEarned: 0, adsWatched: 0 }); }
+function saveStats(s) { STORAGE.set('traderStats', s); }
+function bumpStat(key, amount) { var s = getStats(); s[key] = (s[key] || 0) + (amount === undefined ? 1 : amount); saveStats(s); return s; }
+function getUnlocked() { return STORAGE.get('traderUnlocked', {}); }
+function unlockAch(id) { var u = getUnlocked(); if (u[id]) return false; u[id] = true; STORAGE.set('traderUnlocked', u); return true; }
+var Sound = {
+  ctx: null, enabled: true,
+  init: function () {
+    try {
+      if (!this.ctx) {
+        var AC = window.AudioContext || window.webkitAudioContext;
+        if (!AC) { this.enabled = false; return; }
+        this.ctx = new AC();
+      }
+      if (this.ctx.state === 'suspended') this.ctx.resume();
+    } catch (e) { this.enabled = false; }
+  },
+  play: function (f, d, t, v, dl) {
+    if (!this.enabled || !this.ctx) return;
+    t = t || 'sine'; v = v || 0.08; dl = dl || 0;
+    try {
+      var now = this.ctx.currentTime + dl;
+      var o = this.ctx.createOscillator();
+      var g = this.ctx.createGain();
+      o.type = t;
+      o.frequency.setValueAtTime(f, now);
+      g.gain.setValueAtTime(0, now);
+      g.gain.linearRampToValueAtTime(v, now + 0.01);
+      g.gain.exponentialRampToValueAtTime(0.001, now + d);
+      o.connect(g); g.connect(this.ctx.destination);
+      o.start(now); o.stop(now + d);
+    } catch (e) {}
+  },
+  click: function () { this.play(900, 0.04, 'sine', 0.04); },
+  buy: function () { this.play(520, 0.06); this.play(360, 0.08, 'sine', 0.07, 0.04); },
+  sellWin: function () { this.play(523, 0.08, 'triangle', 0.09); this.play(659, 0.08, 'triangle', 0.09, 0.06); this.play(784, 0.12, 'triangle', 0.09, 0.12); },
+  sellLoss: function () { this.play(300, 0.1, 'sawtooth', 0.07); this.play(180, 0.15, 'sawtooth', 0.07, 0.08); },
+  combo: function (l) { var b = 600 + Math.min(l, 8) * 60; this.play(b, 0.06, 'triangle', 0.1); this.play(b * 1.3, 0.08, 'triangle', 0.1, 0.05); },
+  warning: function () { this.play(1000, 0.04, 'square', 0.04); },
+  ad: function () { this.play(500, 0.06, 'square', 0.06); this.play(700, 0.06, 'square', 0.06, 0.06); this.play(900, 0.1, 'square', 0.06, 0.12); },
+  win: function () { [523, 659, 784, 1047].forEach(function (f, i) { Sound.play(f, 0.2, 'triangle', 0.1, i * 0.12); }); },
+  lose: function () { [400, 350, 300, 200].forEach(function (f, i) { Sound.play(f, 0.25, 'sawtooth', 0.08, i * 0.15); }); },
+  reward: function () { [660, 880, 1100].forEach(function (f, i) { Sound.play(f, 0.15, 'triangle', 0.1, i * 0.1); }); },
+  ach: function () { [660, 880, 1100, 1320].forEach(function (f, i) { Sound.play(f, 0.12, 'triangle', 0.12, i * 0.08); }); },
+  event: function () { this.play(440, 0.15, 'triangle', 0.1); this.play(660, 0.2, 'triangle', 0.1, 0.1); }
+};
+function haptic(type) {
+  if (!navigator.vibrate) return;
+  if (!STORAGE.get('traderHaptics', true)) return;
+  try {
+    if (type === 'light') navigator.vibrate(8);
+    else if (type === 'medium') navigator.vibrate([12, 25, 12]);
+    else if (type === 'success') navigator.vibrate([15, 30, 15, 30, 25]);
+    else if (type === 'error') navigator.vibrate([40, 25, 40]);
+    else if (type === 'achievement') navigator.vibrate([15, 20, 15, 20, 15, 20, 30]);
+  } catch (e) {}
+}
+var GS = {
+  money: 0, time: 0, maxTime: 0, combo: 0, bestCombo: 0,
+  active: false, hitGoal: false, adReady: true, adCooldownUntil: 0,
+  timerPaused: false, goods: [], startMoney: 0, tradesThisRun: 0,
+  adsThisRun: 0, achievementsThisRun: [], eventVolBoost: 1
+};
+var tickInterval = null, timerInterval = null;
+var eventDelayTimer = null, eventEndTimer = null, newsInterval = null;
+function $(id) { return document.getElementById(id); }
+function initGoods() {
+  GS.goods = GOODS_DEF.map(function (def) {
+    var hist = [];
+    for (var k = 0; k < 25; k++) hist.push(Math.round(def.base * (0.9 + Math.random() * 0.2)));
+    return Object.assign({}, def, { price: def.base, history: hist, owned: 0, avgCost: 0, trend: 0 });
+  });
+}
+function shift(idx, mult) {
+  var g = GS.goods[idx]; if (!g) return;
+  g.price = Math.round(g.price * mult);
+  g.history.push(g.price);
+  updateGoodUI(idx);
+}
+function buildUI() {
+  var box = $('goods'); box.innerHTML = '';
+  GS.goods.forEach(function (g, i) {
+    var card = document.createElement('div');
+    card.className = 'good';
+    card.innerHTML = '<div class="good-top"><span class="good-name">' + g.icon + ' ' + g.name + ' <small>(' + g.risk + ')</small></span><span class="good-price" id="price-' + i + '">' + g.price + '</span></div><div class="chart-wrap"><canvas class="chart" id="chart-' + i + '"></canvas></div><div class="good-actions"><button class="btn-buy" id="buy-' + i + '">اشترِ</button><button class="btn-sell" id="sell-' + i + '">بِع</button><button class="btn-sell-all" id="sellAll-' + i + '">الكل</button></div><div class="good-owned" id="owned-' + i + '"></div>';
+    box.appendChild(card);
+    $('buy-' + i).addEventListener('click', function () { buy(i); });
+    $('sell-' + i).addEventListener('click', function () { sell(i, 1); });
+    $('sellAll-' + i).addEventListener('click', function () { sell(i, GS.goods[i].owned); });
+    setupCanvas(i);
+    drawChart(i);
+    updateGoodUI(i);
+  });
+}
+function setupCanvas(i) {
+  var c = $('chart-' + i); if (!c) return;
+  var r = c.getBoundingClientRect();
+  var w = r.width > 10 ? r.width : 340;
+  var h = r.height > 10 ? r.height : 24;
+  var dpr = window.devicePixelRatio || 1;
+  c.width = w * dpr; c.height = h * dpr;
+  c.style.width = w + 'px'; c.style.height = h + 'px';
+  c.getContext('2d').setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+function drawChart(i) {
+  var c = $('chart-' + i); if (!c) return;
+  var g = GS.goods[i];
+  var ctx = c.getContext('2d');
+  var w = parseFloat(c.style.width) || 340;
+  var h = parseFloat(c.style.height) || 24;
+  ctx.clearRect(0, 0, w, h);
+  var hist = g.history; if (hist.length < 2) return;
+  var mn = Math.min.apply(null, hist);
+  var mx = Math.max.apply(null, hist);
+  if (g.owned > 0 && g.avgCost > 0) { mn = Math.min(mn, g.avgCost); mx = Math.max(mx, g.avgCost); }
+  var range = mx - mn || 1;
+  var isUp = hist[hist.length - 1] >= hist[0];
+  var color = isUp ? '#4ade80' : '#ef4444';
+  if (g.owned > 0 && g.avgCost > 0) {
+    var y = h - ((g.avgCost - mn) / range) * (h - 6) - 3;
+    ctx.strokeStyle = 'rgba(251,191,36,.5)'; ctx.lineWidth = 1;
+    ctx.setLineDash([3, 3]);
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+    ctx.setLineDash([]);
+  }
+  ctx.strokeStyle = color; ctx.lineWidth = 2; ctx.lineJoin = 'round';
+  ctx.beginPath();
+  hist.forEach(function (p, idx) {
+    var x = (idx / (hist.length - 1)) * w;
+    var y = h - ((p - mn) / range) * (h - 6) - 3;
+    if (idx === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  });
+  ctx.stroke();
+  ctx.lineTo(w, h); ctx.lineTo(0, h); ctx.closePath();
+  ctx.fillStyle = isUp ? 'rgba(74,222,128,.12)' : 'rgba(239,68,68,.12)';
+  ctx.fill();
+  var ly = h - ((hist[hist.length - 1] - mn) / range) * (h - 6) - 3;
+  ctx.fillStyle = color;
+  ctx.beginPath(); ctx.arc(w - 2, ly, 3, 0, Math.PI * 2); ctx.fill();
+}
+function updateGoodUI(i) {
+  var g = GS.goods[i];
+  var pEl = $('price-' + i); if (!pEl) return;
+  var prev = parseInt(pEl.textContent, 10);
+  pEl.textContent = g.price;
+  pEl.classList.remove('up','down','bump');
+  if (g.price > prev) pEl.classList.add('up');
+  else if (g.price < prev) pEl.classList.add('down');
+  void pEl.offsetWidth;
+  pEl.classList.add('bump');
+  var oEl = $('owned-' + i);
+  oEl.classList.remove('profit','loss');
+  if (g.owned > 0) {
+    var diff = g.price - Math.round(g.avgCost);
+    var pct = Math.round((diff / g.avgCost) * 100);
+    oEl.textContent = 'تملك: ' + g.owned + ' • متوسط: ' + Math.round(g.avgCost) + ' (' + (diff >= 0 ? '+' : '') + pct + '%)';
+    if (diff > 0) oEl.classList.add('profit'); else if (diff < 0) oEl.classList.add('loss');
+  } else oEl.textContent = '';
+  var b = $('buy-' + i), s = $('sell-' + i), sa = $('sellAll-' + i);
+  var rmin = Math.min.apply(null, g.history.slice(-10));
+  b.classList.toggle('pulse', GS.active && g.owned === 0 && g.price <= rmin);
+  s.classList.toggle('pulse-profit', GS.active && g.owned > 0 && g.price > g.avgCost * 1.04);
+  drawChart(i);
+  updateButtons();
+}
+function updateButtons() {
+  GS.goods.forEach(function (g, i) {
+    var b = $('buy-' + i), s = $('sell-' + i), sa = $('sellAll-' + i);
+    if (b) b.disabled = !GS.active || GS.money < g.price;
+    if (s) s.disabled = !GS.active || g.owned < 1;
+    if (sa) sa.disabled = !GS.active || g.owned < 1;
+  });
+}
+function updateWallet() {
+  var el = $('money'); if (el) el.textContent = GS.money;
+  updateButtons();
+  if (!GS.hitGoal && GS.money >= CFG.goalGold) { GS.hitGoal = true; endGame(true); }
+}
+function updateTimeUI() {
+  var t = $('timeVal'); if (t) t.textContent = GS.time.toFixed(1) + 's';
+  var f = $('timeFill'); if (!f) return;
+  var pct = Math.max(0, Math.min(100, (GS.time / GS.maxTime) * 100));
+  f.style.width = pct + '%';
+  f.classList.toggle('warn', GS.time < 10);
+}
+function addTime(amount) {
+  GS.time = Math.max(0, GS.time + amount);
+  if (GS.time > GS.maxTime) GS.maxTime = GS.time;
+  updateTimeUI();
+  var f = $('timeFill'); if (!f) return;
+  f.classList.remove('gain','warn');
+  void f.offsetWidth;
+  if (amount > 0) {
+    f.classList.add('gain');
+    setTimeout(function () { f.classList.remove('gain'); }, 450);
+    spawnFloat('+' + amount + 's', 'positive', f);
+  } else if (amount < 0) {
+    f.classList.add('warn');
+    shake();
+    spawnFloat(amount + 's', 'negative', f);
+  }
+}
+function buy(i) {
+  if (!GS.active) return;
+  var g = GS.goods[i];
+  if (GS.money < g.price) { Sound.click(); return; }
+  Sound.buy();
+  haptic('light');
+  GS.money -= g.price;
+  g.avgCost = g.owned === 0 ? g.price : (g.avgCost * g.owned + g.price) / (g.owned + 1);
+  g.owned++;
+  GS.tradesThisRun++;
+  bumpStat('totalTrades');
+  spawnFloat('-' + g.price, 'negative', $('buy-' + i));
+  updateWallet();
+  updateGoodUI(i);
+  checkAchievements();
+}
+function sell(i, count) {
+  if (!GS.active) return;
+  var g = GS.goods[i];
+  if (g.owned < 1 || count < 1) { Sound.click(); return; }
+  count = Math.min(count, g.owned);
+  var sale = g.price * count;
+  var cost = Math.round(g.avgCost) * count;
+  var profit = sale - cost;
+  GS.money += sale;
+  GS.tradesThisRun += count;
+  bumpStat('totalTrades', count);
+  bumpStat('totalProfit', profit);
+  bumpStat('lifetimeEarned', sale);
+  if (profit > 0) {
+    GS.combo++;
+    GS.bestCombo = Math.max(GS.bestCombo, GS.combo);
+    var bonusGold = Math.min(GS.combo, 5) * 20;
+    var bonusTime = CFG.timeGain + Math.min(GS.combo - 1, CFG.comboMax) * CFG.comboBonus;
+    GS.money += bonusGold;
+    Sound.sellWin(); Sound.combo(GS.combo);
+    haptic('success');
+    spawnFloat('+' + sale, 'positive', $('sell-' + i));
+    if (bonusGold > 0) setTimeout(function () { spawnFloat('+' + bonusGold + '🔥', 'gold', $('sell-' + i)); }, 150);
+    addTime(bonusTime);
+    flash('green');
+    if (GS.combo >= 2) showCombo();
+  } else if (profit < 0) {
+    GS.combo = 0;
+    hideCombo();
+    Sound.sellLoss();
+    haptic('error');
+    spawnFloat('' + sale, 'positive', $('sell-' + i));
+    addTime(-CFG.timeLoss);
+    flash('red');
+  } else {
+    Sound.click();
+    spawnFloat('' + sale, 'positive', $('sell-' + i));
+  }
+  g.owned -= count;
+  if (g.owned === 0) g.avgCost = 0;
+  updateWallet();
+  updateGoodUI(i);
+  updateTimeUI();
+  checkAchievements();
+  if (GS.active && GS.time <= 0) endGame(false);
+}
+function scheduleNextEvent() {
+  clearTimeout(eventDelayTimer);
+  var delay = 8000 + Math.random() * 6000;
+  eventDelayTimer = setTimeout(triggerRandomEvent, delay);
+}
+function triggerRandomEvent() {
+  if (!GS.active) return;
+  var ev = MARKET_EVENTS[Math.floor(Math.random() * MARKET_EVENTS.length)];
+  var banner = $('eventBanner');
+  $('eventIcon').textContent = ev.icon;
+  $('eventTitle').textContent = ev.title;
+  $('eventDesc').textContent = ev.desc;
+  banner.classList.remove('hidden');
+  Sound.event();
+  haptic('medium');
+  ev.apply();
+  clearTimeout(eventEndTimer);
+  eventEndTimer = setTimeout(function () {
+    banner.classList.add('hidden');
+    GS.eventVolBoost = 1;
+    scheduleNextEvent();
+  }, ev.dur);
+}
+function checkAchievements() {
+  var stats = getStats();
+  var unlocked = getUnlocked();
+  var checks = {
+    firstTrade: function () { return GS.tradesThisRun >= 1; },
+    firstProfit: function () { return GS.combo >= 1; },
+    combo5: function () { return GS.combo >= 5; },
+    combo10: function () { return GS.combo >= 10; },
+    winEasy: function () { return false; },
+    winMedium: function () { return false; },
+    winHard: function () { return false; },
+    rich5k: function () { return GS.money >= 5000; },
+    trader20: function () { return GS.tradesThisRun >= 20; },
+    clutch: function () { return false; },
+    ads5: function () { return stats.adsWatched >= 5; },
+    veteran: function () { return stats.totalRuns >= 10; }
+  };
+  ACHIEVEMENTS.forEach(function (a) {
+    if (unlocked[a.id]) return;
+    if (checks[a.id] && checks[a.id]()) {
+      if (unlockAch(a.id)) {
+        GS.achievementsThisRun.push(a);
+        showToast('🏅 ' + a.title + ' — ' + a.desc, 'green');
+        Sound.ach();
+        haptic('achievement');
+      }
+    }
+  });
+}
+function unlockWinAch(diff) {
+  var map = { easy: 'winEasy', medium: 'winMedium', hard: 'winHard' };
+  var id = map[diff];
+  if (id && unlockAch(id)) {
+    var a = ACHIEVEMENTS.find(function (x) { return x.id === id; });
+    if (a) {
+      GS.achievementsThisRun.push(a);
+      showToast('🏅 ' + a.title + ' — ' + a.desc, 'green');
+      Sound.ach();
+    }
+  }
+}
+function showToast(text, type) {
+  var layer = $('toastLayer'); if (!layer) return;
+  var t = document.createElement('div');
+  t.className = 'toast' + (type ? ' ' + type : '');
+  t.textContent = text;
+  layer.appendChild(t);
+  setTimeout(function () { t.classList.add('out'); }, 2600);
+  setTimeout(function () { t.remove(); }, 3000);
+}
+function refreshStartScreen() {
+  var d = $('dailyReward');
+  if (d) d.classList.toggle('hidden', !dailyReady());
+  $('best-easy').textContent = getBest('easy');
+  $('best-medium').textContent = getBest('medium');
+  $('best-hard').textContent = getBest('hard');
+  $('hapticsToggle').checked = STORAGE.get('traderHaptics', true);
+  renderAchievements();
+  renderStats();
+}
+function renderAchievements() {
+  var list = $('achList'); if (!list) return;
+  var unlocked = getUnlocked();
+  list.innerHTML = '';
+  var count = 0;
+  ACHIEVEMENTS.forEach(function (a) {
+    var isUnlocked = !!unlocked[a.id];
+    if (isUnlocked) count++;
+    var div = document.createElement('div');
+    div.className = 'ach-item ' + (isUnlocked ? 'unlocked' : 'locked');
+    div.innerHTML = '<span class="ach-icon">' + a.icon + '</span><div class="ach-info"><div class="ach-title">' + a.title + '</div><div class="ach-desc">' + a.desc + '</div></div><span class="ach-check">' + (isUnlocked ? '✓' : '🔒') + '</span>';
+    list.appendChild(div);
+  });
+  $('achCount').textContent = count;
+  $('achTotal').textContent = ACHIEVEMENTS.length;
+}
+function renderStats() {
+  var grid = $('statsGrid'); if (!grid) return;
+  var s = getStats();
+  var cards = [
+    { icon: '🎮', num: s.totalRuns, lbl: 'جلسات' },
+    { icon: '🏆', num: s.totalWins, lbl: 'انتصارات' },
+    { icon: '🤝', num: s.totalTrades, lbl: 'صفقات' },
+    { icon: '📈', num: s.totalProfit, lbl: 'ربح تراكمي' },
+    { icon: '💰', num: s.lifetimeEarned, lbl: 'مكتسب' },
+    { icon: '📺', num: s.adsWatched, lbl: 'إعلانات' }
+  ];
+  grid.innerHTML = '';
+  cards.forEach(function (c) {
+    var div = document.createElement('div');
+    div.className = 'stat-card';
+    div.innerHTML = '<span class="stat-icon">' + c.icon + '</span><span class="stat-num">' + c.num + '</span><span class="stat-lbl">' + c.lbl + '</span>';
+    grid.appendChild(div);
+  });
+}
+function spawnFloat(text, type, targetEl) {
+  var layer = $('floatLayer'); if (!layer) return;
+  var el = document.createElement('div');
+  el.className = 'float-num ' + type;
+  el.textContent = text;
+  var x = window.innerWidth / 2, y = window.innerHeight / 2;
+  if (targetEl && targetEl.getBoundingClientRect) {
+    var r = targetEl.getBoundingClientRect();
+    x = r.left + r.width / 2; y = r.top;
+  }
+  el.style.left = x + 'px'; el.style.top = y + 'px';
+  layer.appendChild(el);
+  setTimeout(function () { el.remove(); }, 1300);
+}
+function flash(color) {
+  var o = $('flashOverlay'); if (!o) return;
+  o.className = ''; void o.offsetWidth;
+  o.className = 'flash-' + color;
+}
+function shake() {
+  var g = $('game'); if (!g) return;
+  g.classList.add('shake');
+  setTimeout(function () { g.classList.remove('shake'); }, 320);
+}
+function showCombo() {
+  var b = $('comboBanner'); if (!b) return;
+  $('comboVal').textContent = GS.combo;
+  b.classList.remove('hidden','pop');
+  void b.offsetWidth;
+  b.classList.add('pop');
+}
+function hideCombo() { var b = $('comboBanner'); if (b) b.classList.add('hidden'); }
+function priceTick() {
+  if (!GS.active) return;
+  GS.goods.forEach(function (g, i) {
+    if (Math.random() < 0.18) g.trend = [-1, 0, 1][Math.floor(Math.random() * 3)];
+    var change = (g.trend * g.vol * 0.4) + (Math.random() - 0.5) * g.vol * 2;
+    g.price = Math.max(10, Math.round(g.price * (1 + change * (CFG.volMult || 1) * GS.eventVolBoost)));
+    g.history.push(g.price);
+    if (g.history.length > 45) g.history.shift();
+    updateGoodUI(i);
+  });
+}
+function timeTick() {
+  if (!GS.active || GS.timerPaused) return;
+  GS.time = Math.max(0, GS.time - 0.5);
+  updateTimeUI();
+  if (GS.time < 10 && GS.time > 0 && Math.floor(GS.time * 2) % 2 === 0) Sound.warning();
+  if (GS.time <= 0) endGame(false);
+}
+function rotateNews() {
+  var t = $('newsText'); if (!t) return;
+  t.textContent = NEWS_ITEMS[Math.floor(Math.random() * NEWS_ITEMS.length)];
+  t.style.animation = 'none';
+  void t.offsetWidth;
+  t.style.animation = '';
+}
+function startGame(diff) {
+  if (diff) currentDifficulty = diff;
+  var dc = DIFFICULTIES[currentDifficulty];
+  CFG.startGold = dc.startGold;
+  CFG.goalGold = dc.goalGold;
+  CFG.startTime = dc.startTime;
+  CFG.timeGain = dc.timeGain;
+  CFG.timeLoss = dc.timeLoss;
+  CFG.volMult = dc.volMult;
+  Sound.init();
+  var dailyBonus = 0;
+  if (dailyReady()) { dailyBonus = claimDaily(); refreshStartScreen(); }
+  GS.money = CFG.startGold + dailyBonus;
+  GS.startMoney = GS.money;
+  GS.time = CFG.startTime;
+  GS.maxTime = CFG.startTime;
+  GS.combo = 0; GS.bestCombo = 0;
+  GS.active = true; GS.hitGoal = false;
+  GS.adReady = true; GS.adCooldownUntil = 0; GS.timerPaused = false;
+  GS.tradesThisRun = 0; GS.adsThisRun = 0;
+  GS.achievementsThisRun = [];
+  GS.eventVolBoost = 1;
+  bumpStat('totalRuns');
+  $('startScreen').classList.add('hidden');
+  $('endScreen').classList.add('hidden');
+  $('playScreen').classList.remove('hidden');
+  void $('playScreen').offsetWidth;
+  initGoods();
+  buildUI();
+  $('goal').textContent = CFG.goalGold;
+  updateWallet(); updateTimeUI(); hideCombo();
+  $('eventBanner').classList.add('hidden');
+  rotateNews();
+  var adBtn = $('adBtn');
+  adBtn.disabled = false;
+  adBtn.innerHTML = '📺 شاهد إعلان <small>+200 💰 +5s</small>';
+  clearInterval(tickInterval); clearInterval(timerInterval);
+  clearTimeout(eventDelayTimer); clearTimeout(eventEndTimer);
+  clearInterval(newsInterval);
+  tickInterval = setInterval(priceTick, CFG.tickMs);
+  timerInterval = setInterval(timeTick, 500);
+  newsInterval = setInterval(rotateNews, 7000);
+  scheduleNextEvent();
+  if (dailyBonus > 0) {
+    setTimeout(function () {
+      spawnFloat('🎁 +' + dailyBonus, 'gold');
+      flash('gold');
+      Sound.reward();
+      showToast('🎁 مكافأة يومية +' + dailyBonus, 'green');
+    }, 400);
+  }
+}
+function endGame(won) {
+  if (!GS.active) return;
+  GS.active = false;
+  clearInterval(tickInterval); clearInterval(timerInterval); clearInterval(newsInterval);
+  clearTimeout(eventDelayTimer); clearTimeout(eventEndTimer);
+  won = won || GS.money >= CFG.goalGold;
+  if (won) { bumpStat('totalWins'); unlockWinAch(currentDifficulty); }
+  if (won && GS.time < 5) {
+    if (unlockAch('clutch')) {
+      var a = ACHIEVEMENTS.find(function (x) { return x.id === 'clutch'; });
+      if (a) { GS.achievementsThisRun.push(a); showToast('🏅 ' + a.title + ' — ' + a.desc, 'green'); }
+    }
+  }
+  var isNewRecord = saveBest(currentDifficulty, GS.money);
+  var profit = GS.money - GS.startMoney;
+  $('playScreen').classList.add('hidden');
+  $('endScreen').classList.remove('hidden');
+  $('endIcon').textContent = won ? '🏆' : '💸';
+  $('endTitle').textContent = won ? 'فوز ساحق!' : 'انتهى الوقت';
+  $('endMsg').textContent = won ? 'أنت تاجر من الطراز الرفيع' : 'حاول مجدداً — الوقت موارد';
+  $('endMoney').textContent = GS.money;
+  $('endCombo').textContent = GS.bestCombo;
+  $('endTime').textContent = GS.time.toFixed(1) + 's';
+  $('endProfit').textContent = (profit >= 0 ? '+' : '') + profit;
+  $('endDiffName').textContent = DIFFICULTIES[currentDifficulty].name;
+  $('endBest').textContent = getBest(currentDifficulty);
+  $('newRecord').classList.toggle('hidden', !isNewRecord);
+  var achBox = $('endAchievements');
+  var achList = $('endAchList');
+  if (GS.achievementsThisRun.length > 0) {
+    achBox.classList.remove('hidden');
+    achList.innerHTML = '';
+    GS.achievementsThisRun.forEach(function (a) {
+      var span = document.createElement('span');
+      span.className = 'end-ach-item';
+      span.textContent = a.icon + ' ' + a.title;
+      achList.appendChild(span);
+    });
+  } else achBox.classList.add('hidden');
+  if (won) Sound.win(); else Sound.lose();
+  flash(won ? 'gold' : 'red');
+}
+function attachListeners() {
+  document.querySelectorAll('.tab').forEach(function (t) {
+    t.addEventListener('click', function () {
+      Sound.init(); Sound.click();
+      document.querySelectorAll('.tab').forEach(function (x) { x.classList.remove('active'); });
+      document.querySelectorAll('.tab-content').forEach(function (x) { x.classList.add('hidden'); });
+      t.classList.add('active');
+      $('tab-' + t.getAttribute('data-tab')).classList.remove('hidden');
+    });
+  });
+  document.querySelectorAll('.diff-btn').forEach(function (b) {
+    b.addEventListener('click', function () {
+      Sound.init();
+      startGame(b.getAttribute('data-diff'));
+    });
+  });
+  var hapticsToggle = $('hapticsToggle');
+  if (hapticsToggle) hapticsToggle.addEventListener('change', function (e) {
+    STORAGE.set('traderHaptics', e.target.checked);
+    if (e.target.checked) haptic('light');
+  });
+  var resetBtn = $('resetBtn');
+  if (resetBtn) resetBtn.addEventListener('click', function () {
+    if (confirm('هل تريد حذف كل التقدم؟ لا يمكن التراجع.')) {
+      try { localStorage.clear(); } catch (e) {}
+      location.reload();
+    }
+  });
+  var againBtn = $('againBtn');
+  if (againBtn) againBtn.addEventListener('click', function () { startGame(currentDifficulty); });
+  var changeDiffBtn = $('changeDiffBtn');
+  if (changeDiffBtn) changeDiffBtn.addEventListener('click', function () {
+    $('endScreen').classList.add('hidden');
+    $('startScreen').classList.remove('hidden');
+    refreshStartScreen();
+  });
+  var muteBtn = $('muteBtn');
+  if (muteBtn) muteBtn.addEventListener('click', function (e) {
+    Sound.enabled = !Sound.enabled;
+    e.currentTarget.textContent = Sound.enabled ? '🔊' : '🔇';
+  });
+  var adBtn = $('adBtn');
+  if (adBtn) adBtn.addEventListener('click', function () {
+    if (!GS.active || !GS.adReady || GS.time < 3) return;
+    GS.adReady = false;
+    GS.timerPaused = true;
+    GS.adsThisRun++;
+    bumpStat('adsWatched');
+    var btn = $('adBtn');
+    btn.disabled = true;
+    btn.innerHTML = '📺 جاري العرض...';
+    Sound.ad();
+    setTimeout(function () {
+      GS.money += CFG.adGold;
+      addTime(CFG.adTime);
+      Sound.buy();
+      haptic('light');
+      spawnFloat('+' + CFG.adGold + ' 💰', 'gold');
+      flash('gold');
+      updateWallet();
+      GS.timerPaused = false;
+      checkAchievements();
+      GS.adCooldownUntil = Date.now() + CFG.adCooldownMs;
+      (function tickCooldown() {
+        var r = GS.adCooldownUntil - Date.now();
+        if (r <= 0 || !GS.active) {
+          GS.adReady = true;
+          btn.disabled = false;
+          btn.innerHTML = '📺 شاهد إعلان <small>+200 💰 +5s</small>';
+          return;
+        }
+        btn.innerHTML = '⏳ ' + Math.ceil(r / 1000) + 's';
+        setTimeout(tickCooldown, 500);
+      })();
+      if (GS.money >= CFG.goalGold) endGame(true);
+    }, 2000);
+  });
+  window.addEventListener('resize', function () {
+    GS.goods.forEach(function (g, i) { setupCanvas(i); drawChart(i); });
+  });
+  refreshStartScreen();
+}
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', attachListeners);
+} else {
+  attachListeners();
+}
+</script>
+</body>
+</html>
